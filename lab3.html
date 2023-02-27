@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Lab 3</title>
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
+            <div class="container px-4">
+                <a class="navbar-brand" href="#page-top">ECE 4160 Project Website</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                </div>
+            </div>
+        </nav>
+        <!-- Header-->
+        <header class="bg-primary bg-gradient text-white">
+            <div class="container px-4 text-center">
+                <h1 class="fw-bolder">Lab 3: Time of Flight Sensors</h1>
+                <p class="lead">The objective of this lab is to to equip the robot with sensors - the faster the robot can sample and the more it can trust a sensor reading, the faster it is able to drive.</p>
+                <a href="index.html" style="font-size: 20px;color: white;text-decoration: underline">Back to mainpage</a>
+            </div>
+        </header>
+        <!-- About section-->
+        <section id="about">
+            <div class="container px-4">
+                <div class="row gx-4 justify-content-center">
+                    <div class="col-lg-10">
+                        <h2>Prelab</h2>
+                        <p> Using the example code Example05_I2C, I was able to locate the I2C sensor address of the ToF sensor, which was 0x29. 0x29 is the expected address due to the one extra bit at the front labeled “ACK.” 0x29 in binary is 0b101001. So we have to shift everything to the left by 1 bit which gives 0b1010010 which in hexadecimal is 0x52, the expected address.<p>
+                          <img class="img-fluid rounded mb-5" width="560" height="315" src="assets/img/lab 3/address.png" alt="...">
+                        <p>There are two approaches to using two ToF sensors. One approach is to change the address of one of them so that the two sensors send data to two different addresses on the Artemis board. A second approach is to have only one of them on at any given time and hence only using one sensor at a time.<p>
+                        <p>As for the placement of the sensors on the actual robot car, I plan to attach one of the ToF sensors at the front of the robot and one at the side of the robot. This means that the robot will not have ToF sensors on one of its sides and at the back. So it will miss obstacles on whichever sides it doesn’t have a ToF sensor on.<p>
+                        <p>Here's a wiring diagram I used for this lab.<p>
+                          <img class="img-fluid rounded mb-5" width="560" height="315" src="assets/img/lab 3/wiring.png" alt="...">
+                        <p>Note: XSHUT was also connected to the Artemis pins to enable shutting off of the sensors.<p>
+                        <br><br>
+                        <h2>Lab Tasks</h2>
+                        <p>First, I physically connected the ToF sensor to the Artemis board using an I2C cable and a breakout board. Here is a picture of the ToF sensor plugged into the I2C breakout board:<p>
+                          <img class="img-fluid rounded mb-5" width="400" height="315" src="assets/img/lab 3/connection.jpeg" alt="...">
+                       <p>The ToF sensor has 3 modes that it can operate in: short, medium, and long. In short mode, the ToF sensor can detect up to 136 cm in the dark and up to 135 cm in bright lighting. In medium mode, it can detect up to 290 cm in the dark and up to 76 cm in bright lighting. In long mode, it can detect up to 360 cm in the dark and up to 73 cm in bright lighting. To set the mode of the sensor (short, medium, or long), I ran the code Example2_SetDistanceMode with distanceSensor.setDistanceModeShort() as the chosen mode. Then I ran the code Example1_ReadDistance for the sensor to start taking measurement. The following is a plot of the sensor data I obtained.<p>
+                         <img class="img-fluid rounded mb-5" width="560" height="315" src="assets/img/lab 3/distance_plot.png" alt="...">
+                       <p>Next, to assess the ToF sensor's accuracy, I devised the following setup.<p>
+                         <img class="img-fluid rounded mb-5" width="560" height="255" src="assets/img/lab 3/setup.jpeg" alt="...">
+                       <p>I measured the sensor data at a distance 600mm, 500mm, 400mm, 300mm, 200mm, 100mm, 50mm from the orange box. I plotted the measured sensor data versus the actual distance using MATLAB:<p>
+                         <img class="img-fluid rounded mb-5" width="560" height="315" src="assets/img/lab 3/accuracy.png" alt="...">
+                       <p>The orange line represents the ideal sensor. You can see that as the distance we’re measuring gets greater, the actual sensor deviates more and more from the ideal sensor.<p>
+                       <p>Next, I connected a second ToF sensor to the Artemis board. To get the Artemis board to receive sensor data from both sensors simultaneously, I changed the address of one of the two sensors (the other sensor just uses the default address, 0x52). Here is the code that changes the address of one of the sensors.<p>
+                         <script src="https://gist.github.com/apark2459/4d8d0073fa4e26f68359913eaef48038.js"></script>
+                       <p>To change the address of one of the sensors, one of the sensors must be off. To turn a sensor off, I had to make use of the shutdown pins on the sensors. I connected the XSHUT pins on the sensors to pins 8 and 9 on the Artemis board — setting the XSHUT pin high turns the sensor off. Then distanceSensor2.setI2CAddress(32) changes the address of whichever sensor is turned on to 32. Here is a plot of the two sensors working in parallel, measuring two different distances.<p>
+                         <img class="img-fluid rounded mb-5" width="560" height="315" src="assets/img/lab 3/twodistance_plot.png" alt="...">
+                       <p>One downside of the code in Example1_ReadDistance is that it’s stuck in a while loop unable to do anything (i.e. can't run any code) until sensor data is available. This is inefficient because the Artemis board could be running other code while it waits for sensor data to be ready and available. To run other code while the sensor measures distance data, I used an if statement to only print the sensor data when it’s available using distanceSensor.checkForDataReady() (which returns 1 only if the sensor data is ready).<p>
+                         <script src="https://gist.github.com/apark2459/6e82c2baea5cac3250f8c8226e1f14a1.js"></script>
+                       <p>The final task for this lab was to send the timestamped distance data to my laptop via Bluetooth. This task uses what I learned in lab 2 to allow communication between the Artemis board and my laptop. Here’s the Arduino code (written in ble_arduino.ino) that achieves this task.<p>
+                         <script src="https://gist.github.com/apark2459/3a1d26a0d2ba6b24d36d3c298cbdeaa4.js"></script>
+                       <p>I tested this code using Jupyter notebook and confirmed that it successfully sends 5 seconds of distance data to my laptop.<p>
+                         <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 3/bluetooth.png" alt="...">
+                       <p>The following is this data plotted using MATLAB.<p>
+                         <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 3/bluetooth_plot.png" alt="...">
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Footer-->
+        <footer class="py-5 bg-dark">
+            <div class="container px-4"><p class="m-0 text-center text-white">Copyright &copy; apark2459.github.io 2023</p></div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>

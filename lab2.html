@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Lab 2</title>
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
+            <div class="container px-4">
+                <a class="navbar-brand" href="#page-top">ECE 4160 Project Website</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                </div>
+            </div>
+        </nav>
+        <!-- Header-->
+        <header class="bg-primary bg-gradient text-white">
+            <div class="container px-4 text-center">
+                <h1 class="fw-bolder">Lab 2: Bluetooth Communication</h1>
+                <p class="lead">The objective of this lab is to establish Bluetooth communication between my laptop and the Artemis board through the Bluetooth stack. I will be using Python inside a Jupyter notebook on the laptop end and the Arduino programming language on the Artemis side. I will also establish a framework for sending data via Bluetooth that will be useful in future labs.</p>
+                <a href="index.html" style="font-size: 20px;color: white;text-decoration: underline">Back to mainpage</a>
+            </div>
+        </header>
+        <!-- About section-->
+        <section id="about">
+            <div class="container px-4">
+                <div class="row gx-4 justify-content-center">
+                    <div class="col-lg-10">
+                        <h2>ECHO Command</h2>
+                        <p> For the first task, I was tasked to get the Artemis to receive a string “HiHello” from a central device (laptop) and append “:)” to that string and send this string back to the laptop. Here is the Arduino code I wrote for this task.<p>
+                          <script src="https://gist.github.com/apark2459/119f867e52b3de54af31136c49324e1f.js"></script>
+                        <p>The following is a screenshot of the Jupyter notebook that shows that the ECHO command works.<p>
+                          <img class="img-fluid rounded mb-5" width="400" height="315" src="assets/img/lab 2/ECHO.png" alt="...">
+                        <br><br>
+                        <h2>GET_TIME_MILLIS Command</h2>
+                        <p>For the second task, I was tasked with writing code that gets the Artemis to write the current time (in milliseconds) to a string characteristic then make that string characteristic available to the laptop for repcetion. This is very similar to the first task in that we are clearing and writing to a string characteristic and making that characteristic available for reception by the laptop. Here is the Arduino code for this task.<p>
+                          <script src="https://gist.github.com/apark2459/5f246d1acd33597b8aa05b6adf5eab66.js"></script>
+                       <p>The following is a screenshot of the Jupyter notebook that shows that the GET_TIME_MILLIS command works.<p>
+                         <img class="img-fluid rounded mb-5" width="400" height="315" src="assets/img/lab 2/GET_TIME_MILLIS.png" alt="...">
+                       <p>One thing I learned from writing the code for this task is that we cannot append a long data type to a string. So I had to first declare a variable ‘time’ of type float and turn millis() into a float before I could append it to the string characteristic.<p>
+                       <br><br>
+                       <h2>Notification Handler</h2>
+                       <p>For the third task, I was asked to define something called a "notification handler." From <a href="https://www.arduino.cc/reference/en/libraries/arduinoble/">this website</a>, I had to first learn what a “notification” was in BLE. According to this website, a notification is a mechanism that lets a central device know when data on the “bulletin board” has changed. To write a function that achieves this, I had to use a method called start_notify. Here’s the function specification for start_notify: <p>
+                         <img class="img-fluid rounded mb-5" width="560" height="315" src="assets/img/lab 2/start_notify.png" alt="...">
+                        <p>The method start_notify takes two arguments: the uuid (i.e. address) of the characteristic that you want to activate notifications on and a callback function to be called when the notification happens. The callback function is the function that I was asked to write for this task. More specifically, I was asked to write a notification handler that extracts the time whenever the characteristic containing the time information updates. The uuid of the string characteristic is the same one that we’ve been using all along, ‘RX_STRING’ = f235a225-6735-4d73-94cb-ee5dfce9ba83, and the code for the notification handler is below.<p>
+                          <script src="https://gist.github.com/apark2459/c56083a5685b6c0415d5a0d0e943dd58.js"></script>
+                       <p>The split() method splits a string into multiple fragments based on the positions of ‘:’. For example, ’T:7128.0’ gets fragmented into ’T’ and ‘7128.0’. Of the two, we want to grab the second one so we write [1] (i.e. second element in the array). Then we print this time value to the screen.<p>
+                       <p>Now to test if the laptop indeed gets “notified” every time the characteristic containing the time value changes, I called the function that was defined in the second task, GET_TIME_MILLIS multiple times. Every time GET_TIME_MILLIS is called, the characteristic should get updated to the most current time value. And every time it is updated, start_notify should get called, eventually printing the new time to the screen via the callback function that I wrote. I tested the notification handler by calling GET_TIME_MILLIS three times:<p>
+                         <img class="img-fluid rounded mb-5" width="400" height="315" src="assets/img/lab 2/notification_handler.png" alt="...">
+                       <p>The Jupyter notebook prints three notifications (updated values get printed three times) so the notification handler works.<p>
+                       <br><br>
+                       <h2>GET_TEMP_5S Command</h2>
+                       <p>For the fourth task, I was asked to write a command that sends an array of five temperature values (taken every 1 second for 5 seconds) from the Artemis to the laptop. Here is the code for the command.<p>
+                         <script src="https://gist.github.com/apark2459/fa5ed9ae6c4139365bd2e13a3d048268.js"></script>
+                       <p>To write this command, I used a for-loop. Every loop, I cleared the string variable and appended the current time and the current temperature. Then I upload the time-temperature pair to the “bulletin board” (that the laptop can read from). Then I used the delay function until it has taken the current loop 1 second to run before going to the next loop. This loop runs a total of 5 times, appending 1 time-temperature pair every loop (and every loop takes 1 second). And every time that the time-temperature value updates, the laptop is notified via a notification handler.<p>
+                       <p>Also it is worth noting that it is safer to second 1 time-temperature pair at a time because trying to send all 5 at once can exceed the characteristic size limit. I tested called the command on Jupyter notebook and confirmed that it works.<p>
+                         <img class="img-fluid rounded mb-5" width="400" height="315" src="assets/img/lab 2/GET_TEMP_5S.png" alt="...">
+                       <h2>GET_TEMP_5S_RAPID Command</h2>
+                       <p>Task 5 is essentially the same as task 5 but the temperature is sampled at a quicker rate. To sample 50 points in the span of 5 seconds, we need each loop to take 100 milliseconds. So I just tweaked the line that makes each loop last 1 second to make each loop last 0.1 second.<p>
+                         <script src="https://gist.github.com/apark2459/ea013e5f37d3d0421400c41beb514bda.js"></script>
+                       <p>Here is the result (temperature sampled at every 0.1 second, not all of the data fits into the screenshot):<p>
+                         <img class="img-fluid rounded mb-5" width="400" height="315" src="assets/img/lab 2/GET_TEMP_5S_rapid.png" alt="...">
+                      <h2>Limitations</h2>
+                      <p>If the Artemis board has 384 kB of RAM, this translates to 384*1000*8bits/1byte =3,072,000 bits of data that it can store. 5 seconds of 16-bit values taken at 150 Hz translates to 16 bits*150/second*5seconds=12,000 bits in 5 seconds or 2,400 bits per second. This means that the Artemis board would run out of memory after 3,072,000bits/2400bits=1280 seconds or 21.333 minutes.<p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Footer-->
+        <footer class="py-5 bg-dark">
+            <div class="container px-4"><p class="m-0 text-center text-white">Copyright &copy; apark2459.github.io 2023</p></div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>

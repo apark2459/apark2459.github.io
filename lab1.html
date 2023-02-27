@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>ECE 4160 Project Page</title>
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
+            <div class="container px-4">
+                <a class="navbar-brand" href="#page-top">Lab 1</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                </div>
+            </div>
+        </nav>
+        <!-- Header-->
+        <header class="bg-primary bg-gradient text-white">
+            <div class="container px-4 text-center">
+                <h1 class="fw-bolder">Lab 1: The Artemis Board</h1>
+                <p class="lead">The objective of this lab is to set up and become familiar with the Arduino IDE and the Artemis board. To become comfortable with programming the Artemis board, I will be using the board LED, reading/writing serial messages over USB, and use the onboard temperature sensor and pulse density microphone.</p>
+                <a href="index.html" style="font-size: 20px;color: white;text-decoration: underline">Back to mainpage</a>
+            </div>
+        </header>
+        <!-- About section-->
+        <section id="about">
+            <div class="container px-4">
+                <div class="row gx-4 justify-content-center">
+                    <div class="col-lg-10">
+                        <h2>Blinking the LED</h2>
+                        <p> The first task for this lab was to connect the Artemis board to the PC and upload the prewritten example code ("Blink") from the Arduino IDE library to the Artemis board to blink the LED light on the board. The following is a video of the LED blinking.<p>
+                          <iframe width="640" height="360" src="https://youtube.com/embed/K9TEKbEFTTY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+                        <br><br>
+                        <h2>Printing to the serial monitor</h2>
+                        <p>The second task was to upload the example code from the Artemis library ("Example04_Serial") that tests if the Artemis can print to the serial monitor and also if data can be sent to the Artemis board via typing into the serial monitor. The following is a video of receiving data from the Artemis board and sending data to the Artemis board via the serial monitor.<p>
+                          <iframe width="640" height="360" src="https://youtube.com/embed/nggG_HfY4S4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+                       <br><br>
+                       <h2>Measuring Temperature</h2>
+                       <p>The third task was to run the example code Example02_AnalogRead to test that the temperature sensor on the Artemis board works. For this task, I had to tweak the code to print the temperature in Fahrenheit nicely. Here is the code:<p>
+                         <script src="https://gist.github.com/apark2459/1c07e685069dbd2b6a6196360c8028de.js"></script>
+                        <p>In the following video, you can see that when I place my finger on the Artemis board, the temperature reading slowly rises from 77 to 89.<p>
+                          <iframe width="640" height="360" src="https://youtube.com/embed/zSthAvs-FP8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+                       <br><br>
+                       <h2>Detecting Frequency</h2>
+                       <p>The last task for this lab was to run the Example1_MicrophoneOutput code to test that the microphone on the Artemis board works. To test that it works, I whistled into the board and observed that the frequency went up.<p>
+                         <iframe width="640" height="360" src="https://youtube.com/embed/PQhBBHcOzV4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Footer-->
+        <footer class="py-5 bg-dark">
+            <div class="container px-4"><p class="m-0 text-center text-white">Copyright &copy; apark2459.github.io 2023</p></div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>

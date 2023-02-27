@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Lab 4</title>
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
+            <div class="container px-4">
+                <a class="navbar-brand" href="#page-top">ECE 4160 Project Website</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                </div>
+            </div>
+        </nav>
+        <!-- Header-->
+        <header class="bg-primary bg-gradient text-white">
+            <div class="container px-4 text-center">
+                <h1 class="fw-bolder">Lab 4: IMU Sensor</h1>
+                <p class="lead">The objective of this lab is to add the IMU to my robot, start running the Artemis + sensors (ToF and IMU) from a battery, and record a stunt on my RC robot.</p>
+                <a href="index.html" style="font-size: 20px;color: white;text-decoration: underline">Back to mainpage</a>
+            </div>
+        </header>
+        <!-- About section-->
+        <section id="about">
+            <div class="container px-4">
+                <div class="row gx-4 justify-content-center">
+                    <div class="col-lg-10">
+                        <h2>Setting up the IMU</h2>
+                        <p>First I had to physically connect the IMU sensor to the Artemis board using an I2C cable. Here is a picture of the IMU hooked up to the Artemis board.<p>
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 4/setup.jpg" alt="...">
+                        <p>Then to test that the IMU was connected properly to the Artemis, I ran the example code from the sensor’s library (Example1_Basics). Running the example code outputted the following.<p>
+                          <img class="img-fluid rounded mb-5" width="1000" height="315" src="assets/img/lab 4/example_code.png" alt="...">
+                        <p>Here is a plot of the acceleration and angle data that makes it easier to visualize the sensor data.<p>
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 4/imu_plot.png" alt="...">
+                        <p>The pink, purple, cyan curves are the accelerometer data. The green, yellow, red curves are the angle data. It can be seen that the accelerometer data is much noisier than the gyroscope data. This will have implications on angle (pitch, roll, yaw) calculation in the later tasks.<p>
+                        <p>Note that the variable AD0_VAL should be set to 0 in the code because the ADR jumper is closed. The value of AD0_VAL is supposed to represent the last bit of the I2C address.<p>
+                        <h2>Working with accelerometer data</h2>
+                        <p>Using the accelerometer on the IMU, I calculated the pitch and roll (can’t calculate yaw using accelerometer) using the following equations.<p>
+                          <img src="https://latex.codecogs.com/svg.image?\theta=atan2(a_y,a_z)" title="https://latex.codecogs.com/svg.image?\theta=atan2(a_y,a_z)" />
+                          <br>
+                          <img src="https://latex.codecogs.com/svg.image?\phi=atan2(a_x,a_z)" title="https://latex.codecogs.com/svg.image?\phi=atan2(a_x,a_z)" />
+                       <p>Here is the code that implements these equations to calculate pitch, roll, and yaw.<p>
+                         <script src="https://gist.github.com/apark2459/84663ec126cd66bcea667878a2b1561b.js"></script>
+                       <p>Note that it's impossible to determine the yaw using accelerometer data because gravity always points downwards.
+                       <p>Here is a video of the outputs (pitch and roll calculated using the equations above) printing to the serial monitor.<p>
+                         <iframe width="640" height="360" src="https://youtube.com/embed/Cy0P24giOvE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+                       <p>Next, I analyzed the noise in the angle calculated from the accelerometer data by performing a Fourier transform. First, I gathered 200 data points (i.e. 100 pitch angles, 100 roll angles) from the sensor and plotted them in the time domain.<p>
+                         <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 4/pitch_time.png" alt="...">
+                         <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 4/roll_time.png" alt="...">
+                       <p>Then I performed a Fourier transform on thea angle data and plotted the data in the frequency domain.<p>
+                         <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 4/pitch_frequency.png" alt="...">
+                         <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 4/roll_frequency.png" alt="...">
+                       <p>From the frequency domain data, it can be seen that the the angle data doesn’t contain very much high-frequency noise.<p>
+                       <h2>Working with gyroscope data</h2>
+                       <p>Gyroscope measures angular velocity. To get the angle from the angular velocity readings, I numerically integrated the angular velocity. The code for computing the angle from angular velocity is below.<p>
+                         <script src="https://gist.github.com/apark2459/de01b0ab23bd12677da2738e1ace745b.js"></script>
+                       <p>To test that this outputs realistic results, I held the IMU at various orientations and plotted the angle versus time.<p>
+                         <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 4/angle_plot.png" alt="...">
+                       <p>You can see that the angle changes smoothly. However, gyroscopes are vulnerable to drift. That is, because we are integrating, the error in our angular velocity readings accumulates over time. Here is a plot that demonstrates gyroscope drift (I left the IMU flat on the table and recorded the angle data).<p>
+                         <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 4/drift.png" alt="...">
+                       <p>Even though the IMU was sitting flat on the table, the pitch angle changes over time at a constant rate. So while the angles given by the gyroscope is low noise, its readings are inaccurate due to drift.<p>
+                       <p>To mitigate the inaccuracy of the gyroscope while keeping the noise low, we can use a complementary filter between the accelerometer and the gyroscope. That is, we average their data together so that we get the accuracy of the accelerometer while keeping the noise low using the gyroscope data. The code for implementing a complementary filter is the following.<p>
+                         <script src="https://gist.github.com/apark2459/9c9e033a237603fa70132131c06f62cf.js"></script>
+                       <p>To compare the angle data with and without the filter, I plotted the pitch and yaw with and without the filter (red/yellow curves represent filter data and purple/blue curves represent the unfiltered gyroscope data).<p>
+                         <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 4/filter_plot.png" alt="...">
+                       <p>It can be seen that the filtered data is much noisier than the unfiltered data due to contribution from the angles computed from accelerometer data. However, it is on average more accurate than the unfiltered data due to less drift.<p>
+                       <h2>Collecting data into an array</h2>
+                       <p>As you can see in the previous code snippets, I only performed computations only when new sensor data was available. To test the speed of sampling, I printed out the time in milliseconds to the serial monitor. From the output, I was able to find that the IMU has a sampling rate of 3 milliseconds.<p>
+                       <p>Next, I wrote code for a function that collects 100 timestamped IMU data into an array.<p>
+                         <script src="https://gist.github.com/apark2459/0a2f75b510f3dbf7aab55967ecdb26da.js"></script>
+                       <p>The following is the printed output of this function.<p>
+                         <img class="img-fluid rounded mb-5" width="360" height="315" src="assets/img/lab 4/imu_array.png" alt="...">
+                       <p>Next, I wrote code to store 5 seconds of timestamped ToF and IMU data into an array and sent it to my laptop over Bluetooth. The following is the code for sending 5 sceonds of ToF and IMU data.<p>
+                         <script src="https://gist.github.com/apark2459/63781cfe23b34b090cee91e18b35ae9f.js"></script>
+                       <p>I used Jupyter notebook to test this functionality and confirmed that it works.<p >
+                         <img class="img-fluid rounded mb-5" width="560" height="315" src="assets/img/lab 4/imu_5s.png" alt="...">
+                       <h2>Recording a stunt!</h2>
+                       <p>This week in lab, I received the RC robot that I will be using to build the robot in the next 8 labs. Here is a video of me performing stunts with the car.<p>
+                         <iframe width="640" height="360" src="https://youtube.com/embed/DHXHSC5KTw0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+                       <p>Some observations about this RC car was that it is a lot faster than the typical RC car. This means that any latency may become a problem since the robot's state is changing so quickly. So it will be important that our code runs as efficiently as possible going forward.<p>
+                       <p>Then finally, I mounted the two sensors (IMU and ToF) on the the RC car and recorded sensor data for 5 seconds while the RC car performed stunts. Following are the plots of the sensor data recorded during the 5 seconds of stunts:<p>
+                         <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 4/Distance1.png" alt="...">
+                         <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 4/Distance2.png" alt="...">
+                         <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 4/Accelx.png" alt="...">
+                         <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 4/Accely.png" alt="...">
+                         <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 4/Accelz.png" alt="...">
+                         <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 4/Pitch.png" alt="...">
+                         <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 4/Roll.png" alt="...">
+                         <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 4/Yaw.png" alt="...">
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Footer-->
+        <footer class="py-5 bg-dark">
+            <div class="container px-4"><p class="m-0 text-center text-white">Copyright &copy; apark2459.github.io 2023</p></div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>
