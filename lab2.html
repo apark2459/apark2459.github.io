@@ -38,14 +38,14 @@
                           <script src="https://gist.github.com/apark2459/119f867e52b3de54af31136c49324e1f.js"></script>
                         <p>The following is a screenshot of the Jupyter notebook that shows that the ECHO command works.<p>
                           <img class="img-fluid rounded mb-5" width="400" height="315" src="assets/img/lab 2/ECHO.png" alt="...">
-                        <br><br>
+                        <br>
                         <h2>GET_TIME_MILLIS Command</h2>
                         <p>For the second task, I was tasked with writing code that gets the Artemis to write the current time (in milliseconds) to a string characteristic then make that string characteristic available to the laptop for repcetion. This is very similar to the first task in that we are clearing and writing to a string characteristic and making that characteristic available for reception by the laptop. Here is the Arduino code for this task.<p>
                           <script src="https://gist.github.com/apark2459/5f246d1acd33597b8aa05b6adf5eab66.js"></script>
                        <p>The following is a screenshot of the Jupyter notebook that shows that the GET_TIME_MILLIS command works.<p>
                          <img class="img-fluid rounded mb-5" width="400" height="315" src="assets/img/lab 2/GET_TIME_MILLIS.png" alt="...">
                        <p>One thing I learned from writing the code for this task is that we cannot append a long data type to a string. So I had to first declare a variable ‘time’ of type float and turn millis() into a float before I could append it to the string characteristic.<p>
-                       <br><br>
+                       <br>
                        <h2>Notification Handler</h2>
                        <p>For the third task, I was asked to define something called a "notification handler." From <a href="https://www.arduino.cc/reference/en/libraries/arduinoble/">this website</a>, I had to first learn what a “notification” was in BLE. According to this website, a notification is a mechanism that lets a central device know when data on the “bulletin board” has changed. To write a function that achieves this, I had to use a method called start_notify. Here’s the function specification for start_notify: <p>
                          <img class="img-fluid rounded mb-5" width="560" height="315" src="assets/img/lab 2/start_notify.png" alt="...">
@@ -55,18 +55,20 @@
                        <p>Now to test if the laptop indeed gets “notified” every time the characteristic containing the time value changes, I called the function that was defined in the second task, GET_TIME_MILLIS multiple times. Every time GET_TIME_MILLIS is called, the characteristic should get updated to the most current time value. And every time it is updated, start_notify should get called, eventually printing the new time to the screen via the callback function that I wrote. I tested the notification handler by calling GET_TIME_MILLIS three times:<p>
                          <img class="img-fluid rounded mb-5" width="400" height="315" src="assets/img/lab 2/notification_handler.png" alt="...">
                        <p>The Jupyter notebook prints three notifications (updated values get printed three times) so the notification handler works.<p>
-                       <br><br>
+                       <br>
                        <h2>GET_TEMP_5S Command</h2>
                        <p>For the fourth task, I was asked to write a command that sends an array of five temperature values (taken every 1 second for 5 seconds) from the Artemis to the laptop. Here is the code for the command.<p>
                          <script src="https://gist.github.com/apark2459/fa5ed9ae6c4139365bd2e13a3d048268.js"></script>
                        <p>To write this command, I used a for-loop. Every loop, I cleared the string variable and appended the current time and the current temperature. Then I upload the time-temperature pair to the “bulletin board” (that the laptop can read from). Then I used the delay function until it has taken the current loop 1 second to run before going to the next loop. This loop runs a total of 5 times, appending 1 time-temperature pair every loop (and every loop takes 1 second). And every time that the time-temperature value updates, the laptop is notified via a notification handler.<p>
                        <p>Also it is worth noting that it is safer to second 1 time-temperature pair at a time because trying to send all 5 at once can exceed the characteristic size limit. I tested called the command on Jupyter notebook and confirmed that it works.<p>
                          <img class="img-fluid rounded mb-5" width="400" height="315" src="assets/img/lab 2/GET_TEMP_5S.png" alt="...">
+                       <br>
                        <h2>GET_TEMP_5S_RAPID Command</h2>
                        <p>Task 5 is essentially the same as task 5 but the temperature is sampled at a quicker rate. To sample 50 points in the span of 5 seconds, we need each loop to take 100 milliseconds. So I just tweaked the line that makes each loop last 1 second to make each loop last 0.1 second.<p>
                          <script src="https://gist.github.com/apark2459/ea013e5f37d3d0421400c41beb514bda.js"></script>
                        <p>Here is the result (temperature sampled at every 0.1 second, not all of the data fits into the screenshot):<p>
                          <img class="img-fluid rounded mb-5" width="400" height="315" src="assets/img/lab 2/GET_TEMP_5S_rapid.png" alt="...">
+                      <br>
                       <h2>Limitations</h2>
                       <p>If the Artemis board has 384 kB of RAM, this translates to 384*1000*8bits/1byte =3,072,000 bits of data that it can store. 5 seconds of 16-bit values taken at 150 Hz translates to 16 bits*150/second*5seconds=12,000 bits in 5 seconds or 2,400 bits per second. This means that the Artemis board would run out of memory after 3,072,000bits/2400bits=1280 seconds or 21.333 minutes.<p>
                     </div>

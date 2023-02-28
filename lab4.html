@@ -43,6 +43,7 @@
                           <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 4/imu_plot.png" alt="...">
                         <p>The pink, purple, cyan curves are the accelerometer data. The green, yellow, red curves are the angle data. It can be seen that the accelerometer data is much noisier than the gyroscope data. This will have implications on angle (pitch, roll, yaw) calculation in the later tasks.<p>
                         <p>Note that the variable AD0_VAL should be set to 0 in the code because the ADR jumper is closed. The value of AD0_VAL is supposed to represent the last bit of the I2C address.<p>
+                        <br>
                         <h2>Working with accelerometer data</h2>
                         <p>Using the accelerometer on the IMU, I calculated the pitch and roll (can’t calculate yaw using accelerometer) using the following equations.<p>
                           <img src="https://latex.codecogs.com/svg.image?\theta=atan2(a_y,a_z)" title="https://latex.codecogs.com/svg.image?\theta=atan2(a_y,a_z)" />
@@ -60,6 +61,7 @@
                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 4/pitch_frequency.png" alt="...">
                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 4/roll_frequency.png" alt="...">
                        <p>From the frequency domain data, it can be seen that the the angle data doesn’t contain very much high-frequency noise.<p>
+                       <br>
                        <h2>Working with gyroscope data</h2>
                        <p>Gyroscope measures angular velocity. To get the angle from the angular velocity readings, I numerically integrated the angular velocity. The code for computing the angle from angular velocity is below.<p>
                          <script src="https://gist.github.com/apark2459/de01b0ab23bd12677da2738e1ace745b.js"></script>
@@ -73,6 +75,7 @@
                        <p>To compare the angle data with and without the filter, I plotted the pitch and yaw with and without the filter (red/yellow curves represent filter data and purple/blue curves represent the unfiltered gyroscope data).<p>
                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 4/filter_plot.png" alt="...">
                        <p>It can be seen that the filtered data is much noisier than the unfiltered data due to contribution from the angles computed from accelerometer data. However, it is on average more accurate than the unfiltered data due to less drift.<p>
+                       <br>
                        <h2>Collecting data into an array</h2>
                        <p>As you can see in the previous code snippets, I only performed computations only when new sensor data was available. To test the speed of sampling, I printed out the time in milliseconds to the serial monitor. From the output, I was able to find that the IMU has a sampling rate of 3 milliseconds.<p>
                        <p>Next, I wrote code for a function that collects 100 timestamped IMU data into an array.<p>
@@ -83,6 +86,7 @@
                          <script src="https://gist.github.com/apark2459/63781cfe23b34b090cee91e18b35ae9f.js"></script>
                        <p>I used Jupyter notebook to test this functionality and confirmed that it works.<p >
                          <img class="img-fluid rounded mb-5" width="560" height="315" src="assets/img/lab 4/imu_5s.png" alt="...">
+                       <br>
                        <h2>Recording a stunt!</h2>
                        <p>This week in lab, I received the RC robot that I will be using to build the robot in the next 8 labs. Here is a video of me performing stunts with the car.<p>
                          <iframe width="640" height="360" src="https://youtube.com/embed/DHXHSC5KTw0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
