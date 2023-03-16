@@ -1,0 +1,80 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Lab 4</title>
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
+            <div class="container px-4">
+                <a class="navbar-brand" href="#page-top">Jin Hyun's ECE 4160 Website</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                </div>
+            </div>
+        </nav>
+        <!-- Header-->
+        <header class="bg-primary bg-gradient text-white">
+            <div class="container px-4 text-center">
+                <h1 class="fw-bolder">Lab 5: Motors and Open Loop Control</h1>
+                <p class="lead">The objective of this lab is to change from manual (i.e. using a remote controller) to open loop control of the car. At the end of this lab, my car should be able to execute a pre-programmed series of moves, using the Artemis board and two dual motor drivers.</p>
+                <a href="index.html" style="font-size: 20px;color: white;text-decoration: underline">Back to mainpage</a>
+            </div>
+        </header>
+        <!-- About section-->
+        <section id="about">
+            <div class="container px-4">
+                <div class="row gx-4 justify-content-center">
+                    <div class="col-lg-10">
+                        <h2>Prelab</h2>
+                        <p>The following is a wiring diagram that I used for this lab:<p>
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 5/wiring.jpeg" alt="...">
+                        <p>An important observation from the wiring diagram is that each motor is being driven by a single dual motor driver. So each motor driver actually has two input pins and two output pins. Normally, you would connect one input-output pair to one motor. But for this lab, to get as much power out of the motor driver as possible and deliver it to a single motor, we short the two inputs and two output pins together. Even though the voltage supplied to the motor is the same, we are essentially doubling the current, thereby doubling the power delivered to each motor.<p>
+                        <p>I used pins 4, A5, A15, A16 as inputs to the motor drivers because they have PWM capability as per the pinout diagram of the Artemis Nano.<p>
+                        <p>I powered the Artemis and the motor drivers using separate batteries. This is because the motor drivers use significantly more power than the Artemis so it would make sense to allocate a more powerful battery to the motor drivers.<p>
+                        <h2>Lab Tasks</h2>
+                        <p>I hooked up the motor drivers to the Artemis as well as the motors to the motor drivers and tested that the output signals of the motor drivers were PWM signals. Here is a picture of the setup for measuring the output signals:<p>
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 5/setup.jpeg" alt="...">
+                        <p>Because the motor driver uses a 3.7 V battery, I set the power supply to 3.7 V. The code I used to test the PWM signal is the following:<p>
+                          <script src="https://gist.github.com/apark2459/8752a50f744f1481ff8369a4ca1325e4.js"></script>
+                        <p>Here is the actual output displayed on the oscilloscope:<p>
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 5/oscilloscope1.jpeg" alt="...">
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 5/oscilloscope2.jpeg" alt="...">
+                        <p>The first image corresponds to the motor spinning forwards and the second image corresponds to the motor spinning backwards.<p>
+                        <p>Knowing that the motor drivers indeed output proper PWM signals, I finally hooked up the GND and VIN pins on the motor drivers to the battery. Here is are pictures of before and after wiring everything together:<p>
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 5/before.jpeg" alt="...">
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 5/after.jpeg" alt="...">
+                        <p>I used the following code to test that both wheels spin:<p>
+                          <script src="https://gist.github.com/apark2459/e57b1b03593538335db0c5b0686397dd.js"></script>
+                        <p>The following is a video showing that the motors do indeed spin:<p>
+                          <iframe width="640" height="360" src="https://youtube.com/embed/p8ixmS4J_nY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+                        <p>To find the lowest duty cycle that can actually make the car move (i.e. overcome static friction in the wheel bearings), I started at a duty cycle of 10/255 and incrementally increased it by 10/255 each time. The lowest duty cycle that made the car move was 40/255.<p>
+                        <p>For the motors, no calibration was needed as the car moved straight when both motors were given the PWM signals with duty cycle equal to 120/255. Here is a video of the car moving straight for at least 2m:<p>
+                          <iframe width="640" height="360" src="https://youtube.com/embed/tcgClv-NhQc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+                       <p>But the car does start to steer off as the distance increases.<p>
+                       <p>Next, I wrote code to demonstrate open loop control that drives the car forward, turns, drives it backwards, and turns again. Here is the code for this open loop control:<p>
+                         <script src="https://gist.github.com/apark2459/0f04a1ff8943ac6499bcf46517e0ec1c.js"></script>
+                       <p>Here is a video of running this code on the car:<p>
+                         <iframe width="640" height="360" src="https://youtube.com/embed/HP3q0oRqJyY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Footer-->
+        <footer class="py-5 bg-dark">
+            <div class="container px-4"><p class="m-0 text-center text-white">Copyright &copy; apark2459.github.io 2023</p></div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>
