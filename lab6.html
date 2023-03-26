@@ -1,0 +1,72 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Lab 4</title>
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
+            <div class="container px-4">
+                <a class="navbar-brand" href="#page-top">Jin Hyun's ECE 4160 Website</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                </div>
+            </div>
+        </nav>
+        <!-- Header-->
+        <header class="bg-primary bg-gradient text-white">
+            <div class="container px-4 text-center">
+                <h1 class="fw-bolder">Lab 6: PID Speed Control</h1>
+                <p class="lead">The objective of this lab is to implement a PID controller. This lab is part of a series of labs (6-8) on PID control, sensor fusion, and stunts.</p>
+                <a href="index.html" style="font-size: 20px;color: white;text-decoration: underline">Back to mainpage</a>
+            </div>
+        </header>
+        <!-- About section-->
+        <section id="about">
+            <div class="container px-4">
+                <div class="row gx-4 justify-content-center">
+                    <div class="col-lg-10">
+                        <h2>Prelab</h2>
+                        <p>For the prelab, I set up a debugging system that uses Bluetooth to send ToF data from the Artemis to my laptop. Because sending data from the Artemis to the laptop takes a non-negligible amount of time, this would make the control loop slower, leading to a less effective controller. Therefore, the strategy I used was to store all of the data on the Artemis’ memory and send it all at once after the task was over.<p>
+                        <p>To do this, I created an array of length 1000, which would be large enough to store 5 seconds of timestamped ToF sensor data. Then every time I looped through the control loop, I appended the current time and the current distance. At the end of the task, I looped through this array and sent each element in the array one by one via Bluetooth. The following is the code I wrote to achieve this:<p>
+                          <script src="https://gist.github.com/apark2459/a36252f64cebeab01f77ee61109eb0a7.js"></script>
+                        <h2>Lab Tasks</h2>
+                        <h3>P Controller</h3>
+                        <p>I first chose to implement a P (proportional) controller. To implement a P controller, I first set a target distance (a.k.a. reference input in control theory) of 300 mm. That is, the goal is to have the robot stop at a distance 300 mm from the wall. The error is defined as the current distance minus the target distance. And to reach the target distance as fast as possible, the input is made to be proportional to the error — that is, the larger the error, the larger the input. Then this input is inputted into the motor. Here is the code for implementing a P controller:<p>
+                          <script src="https://gist.github.com/apark2459/14a20ef30986a281eccb5f1c22923e89.js"></script>
+                        <p>Here is a video of the robot running on the PD controller:<p>
+                          <iframe width="640" height="360" src="https://youtube.com/embed/AOxEOydI_co" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+                        <p>As you can see, the robot overshoots passed the target distance and is unable to stop in time and hits the wall. No matter how much I lowered the Kp value, the robot seemed to crash into the wall (I found the reason why which will be explained in the next section). This motivated me to add a derivative term to the controller.<p>
+                        <h3>PD Controller</h3>
+                        <p>Adding a derivative term has the effect of preventing an overshoot by easing up the control input as the robot approaches the target distance. To implement a PD controller, I had to modify the code so that it keeps track of the error from the previous loop. Then I calculated the change in error by computing the current error minus the previous error. I scaled this difference by a constant Kd and added this to the proportional term. Here is the code that implements a PD controller:<p>
+                          <script src="https://gist.github.com/apark2459/14a20ef30986a281eccb5f1c22923e89.js"></script>
+                        <p>Here is a video of the robot running on the PD controller:<p>
+                          <iframe width="640" height="360" src="https://youtube.com/embed/N4tUrGPRcSo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+                        <p>Adding the derivative term successfully prevented the robot from overshooting and hitting the wall.<p>
+                        <p>Here is a plot of time vs. distance (from the wall):<p>
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 6/time_vs_distance.png" alt="...">
+                        <p>And here is a plot of time vs. motor input:<p>
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 6/time_vs_motorinput.png" alt="...">
+                        <p>Note: I realized during the implementation of the PD controller that each control loop took anywhere between 0.2 second to 1 second which seemed way too long. It turned out that calling stopRanging() and startRanging() every loop caused each loop to take a long time. To fix this, I just called startRanging() once before the control loop and never stopped taking measurements during the control loop. This dropped the time taken for each loop to about 0.01 second. Running just a P controller with this loop frequency would probably be enough to reach the target distance.<p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Footer-->
+        <footer class="py-5 bg-dark">
+            <div class="container px-4"><p class="m-0 text-center text-white">Copyright &copy; apark2459.github.io 2023</p></div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>
