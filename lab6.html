@@ -38,14 +38,16 @@
                         <p>For the prelab, I set up a debugging system that uses Bluetooth to send ToF data from the Artemis to my laptop. Because sending data from the Artemis to the laptop takes a non-negligible amount of time, this would make the control loop slower, leading to a less effective controller. Therefore, the strategy I used was to store all of the data on the Artemis’ memory and send it all at once after the task was over.<p>
                         <p>To do this, I created an array of length 1000, which would be large enough to store 5 seconds of timestamped ToF sensor data. Then every time I looped through the control loop, I appended the current time and the current distance. At the end of the task, I looped through this array and sent each element in the array one by one via Bluetooth. The following is the code I wrote to achieve this:<p>
                           <script src="https://gist.github.com/apark2459/a36252f64cebeab01f77ee61109eb0a7.js"></script>
+                        <br>
                         <h2>Lab Tasks</h2>
-                        <h3>P Controller</h3>
+                        <h4>P Controller</h4>
                         <p>I first chose to implement a P (proportional) controller. To implement a P controller, I first set a target distance (a.k.a. reference input in control theory) of 300 mm. That is, the goal is to have the robot stop at a distance 300 mm from the wall. The error is defined as the current distance minus the target distance. And to reach the target distance as fast as possible, the input is made to be proportional to the error — that is, the larger the error, the larger the input. Then this input is inputted into the motor. Here is the code for implementing a P controller:<p>
                           <script src="https://gist.github.com/apark2459/14a20ef30986a281eccb5f1c22923e89.js"></script>
+                        <p>When the PID value is between -110 and 110, I added 50 to overcome the motor’s deadzone. When the absolute value of the PID value is greater than 110, I capped off the motor input at 110 because it will crash into the wall even with the controller in place.<p>
                         <p>Here is a video of the robot running on the PD controller:<p>
                           <iframe width="640" height="360" src="https://youtube.com/embed/AOxEOydI_co" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
                         <p>As you can see, the robot overshoots passed the target distance and is unable to stop in time and hits the wall. No matter how much I lowered the Kp value, the robot seemed to crash into the wall (I found the reason why which will be explained in the next section). This motivated me to add a derivative term to the controller.<p>
-                        <h3>PD Controller</h3>
+                        <h4>PD Controller</h4>
                         <p>Adding a derivative term has the effect of preventing an overshoot by easing up the control input as the robot approaches the target distance. To implement a PD controller, I had to modify the code so that it keeps track of the error from the previous loop. Then I calculated the change in error by computing the current error minus the previous error. I scaled this difference by a constant Kd and added this to the proportional term. Here is the code that implements a PD controller:<p>
                           <script src="https://gist.github.com/apark2459/14a20ef30986a281eccb5f1c22923e89.js"></script>
                         <p>Here is a video of the robot running on the PD controller:<p>
