@@ -42,7 +42,7 @@
                         <h2>Lab Tasks</h2>
                         <h4>P Controller</h4>
                         <p>I first chose to implement a P (proportional) controller. To implement a P controller, I first set a target distance (a.k.a. reference input in control theory) of 300 mm. That is, the goal is to have the robot stop at a distance 300 mm from the wall. The error is defined as the current distance minus the target distance. And to reach the target distance as fast as possible, the input is made to be proportional to the error — that is, the larger the error, the larger the input. Then this input is inputted into the motor. Here is the code for implementing a P controller:<p>
-                          <script src="https://gist.github.com/apark2459/14a20ef30986a281eccb5f1c22923e89.js"></script>
+                          <script src="https://gist.github.com/apark2459/9c15b9768110c773d6ca82227699dbeb.js"></script>
                         <p>When the PID value is between -110 and 110, I added 50 to overcome the motor’s deadzone. When the absolute value of the PID value is greater than 110, I capped off the motor input at 110 because it will crash into the wall even with the controller in place.<p>
                         <p>Here is a video of the robot running on the PD controller:<p>
                           <iframe width="640" height="360" src="https://youtube.com/embed/AOxEOydI_co" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
