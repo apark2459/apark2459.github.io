@@ -16,7 +16,6 @@
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
             <div class="container px-4">
                 <a class="navbar-brand" href="#page-top">Jin Hyun's ECE 4160 Website</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                 </div>
             </div>
@@ -40,6 +39,7 @@
                           <script src="https://gist.github.com/apark2459/a36252f64cebeab01f77ee61109eb0a7.js"></script>
                         <br>
                         <h2>Lab Tasks</h2>
+                        <br>
                         <h4>P Controller</h4>
                         <p>I first chose to implement a P (proportional) controller. To implement a P controller, I first set a target distance (a.k.a. reference input in control theory) of 300 mm. That is, the goal is to have the robot stop at a distance 300 mm from the wall. The error is defined as the current distance minus the target distance. And to reach the target distance as fast as possible, the input is made to be proportional to the error — that is, the larger the error, the larger the input. Then this input is inputted into the motor. Here is the code for implementing a P controller:<p>
                           <script src="https://gist.github.com/apark2459/9c15b9768110c773d6ca82227699dbeb.js"></script>
