@@ -23,7 +23,7 @@
         <!-- Header-->
         <header class="bg-primary bg-gradient text-white">
             <div class="container px-4 text-center">
-                <h1 class="fw-bolder">Lab 6: PID Speed Control</h1>
+                <h1 class="fw-bolder">Lab 6: PID Position Control</h1>
                 <p class="lead">The objective of this lab is to implement a PID controller. This lab is part of a series of labs (6-8) on PID control, sensor fusion, and stunts.</p>
                 <a href="index.html" style="font-size: 20px;color: white;text-decoration: underline">Back to mainpage</a>
             </div>
@@ -41,7 +41,7 @@
                         <h2>Lab Tasks</h2>
                         <br>
                         <h4>P Controller</h4>
-                        <p>I first chose to implement a P (proportional) controller. To implement a P controller, I first set a target distance (a.k.a. reference input in control theory) of 300 mm. That is, the goal is to have the robot stop at a distance 300 mm from the wall. The error is defined as the current distance minus the target distance. And to reach the target distance as fast as possible, the input is made to be proportional to the error — that is, the larger the error, the larger the input. Then this input is inputted into the motor. Here is the code for implementing a P controller:<p>
+                        <p>I first chose to implement a P (proportional) controller. To implement a P controller, I first set a target distance (a.k.a. reference input in control theory) of 300 mm. That is, the goal is to have the robot stop at a distance 300 mm from the wall. The error is defined as the current distance minus the target distance. And to reach the target distance as fast as possible, the input is made to be proportional to the error — that is, the larger the error, the larger the input. Then this input is inputted into the motor. The value of Kp was determined through trial and error. Here is the code for implementing a P controller:<p>
                           <script src="https://gist.github.com/apark2459/9c15b9768110c773d6ca82227699dbeb.js"></script>
                         <p>When the PID value is between -110 and 110, I added 50 to overcome the motor’s deadzone. When the absolute value of the PID value is greater than 110, I capped off the motor input at 110 because it will crash into the wall even with the controller in place.<p>
                         <p>The code for the helper functions used (forward() and backward()) is the following:<p>
@@ -50,7 +50,7 @@
                           <iframe width="640" height="360" src="https://youtube.com/embed/AOxEOydI_co" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
                         <p>As you can see, the robot overshoots passed the target distance and is unable to stop in time and hits the wall. No matter how much I lowered the Kp value, the robot seemed to crash into the wall (I found the reason why which will be explained in the next section). This motivated me to add a derivative term to the controller.<p>
                         <h4>PD Controller</h4>
-                        <p>Adding a derivative term has the effect of preventing an overshoot by easing up the control input as the robot approaches the target distance. To implement a PD controller, I had to modify the code so that it keeps track of the error from the previous loop. Then I calculated the change in error by computing the current error minus the previous error. I scaled this difference by a constant Kd and added this to the proportional term. Here is the code that implements a PD controller:<p>
+                        <p>Adding a derivative term has the effect of preventing an overshoot by easing up the control input as the robot approaches the target distance. To implement a PD controller, I had to modify the code so that it keeps track of the error from the previous loop. Then I calculated the change in error by computing the current error minus the previous error. I scaled this difference by a constant Kd and added this to the proportional term. The value of Kd was increased until the robot was no longer crashing into the wall. Here is the code that implements a PD controller:<p>
                           <script src="https://gist.github.com/apark2459/14a20ef30986a281eccb5f1c22923e89.js"></script>
                         <p>Here is a video of the robot running on the PD controller:<p>
                           <iframe width="640" height="360" src="https://youtube.com/embed/N4tUrGPRcSo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
@@ -59,7 +59,6 @@
                           <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 6/time_vs_distance.png" alt="...">
                         <p>And here is a plot of time vs. motor input:<p>
                           <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 6/time_vs_motorinput.png" alt="...">
-                        <p>Note: I realized during the implementation of the PD controller that each control loop took anywhere between 0.2 second to 1 second which seemed way too long. It turned out that calling stopRanging() and startRanging() every loop caused each loop to take a long time. To fix this, I just called startRanging() once before the control loop and never stopped taking measurements during the control loop. This dropped the time taken for each loop to about 0.01 second. Running just a P controller with this loop frequency would probably be enough to reach the target distance.<p>
                     </div>
                 </div>
             </div>

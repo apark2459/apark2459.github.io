@@ -1,0 +1,79 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Lab 7</title>
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
+            <div class="container px-4">
+                <a class="navbar-brand" href="#page-top">Jin Hyun's ECE 4160 Website</a>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                </div>
+            </div>
+        </nav>
+        <!-- Header-->
+        <header class="bg-primary bg-gradient text-white">
+            <div class="container px-4 text-center">
+                <h1 class="fw-bolder">Lab 7: Kalman Filter</h1>
+                <p class="lead">The objective of this lab is to implement a Kalman Filter, which will help you execute the behavior I did in Lab 6 faster. The goal now is to use the Kalman Filter to supplement the slowly sampled ToF values, such that my robot can speed towards the wall as fast as possible, then either stop 30 cm from the wall.</p>
+                <a href="index.html" style="font-size: 20px;color: white;text-decoration: underline">Back to mainpage</a>
+            </div>
+        </header>
+        <!-- About section-->
+        <section id="about">
+            <div class="container px-4">
+                <div class="row gx-4 justify-content-center">
+                    <div class="col-lg-10">
+                        <h2>Estimating System Parameters</h2>
+                        <p>First, I needed to set up the model of the system (i.e. the dynamics of the robot). We can model the robot as a second order system (with respect to position) that is governed by the following state space equation:<p>
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 7/equation.png" alt="...">
+                        <p>To find the system parameters m (mass) and d (drag coefficient), we consider the first order dynamics of the robot's velocity. Since we know the unit step response solution of a first order system, we can infer the system parameters from the step response rather easily.<p>
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 7/parameters.png" alt="...">
+                        <p>I obtained the step response of my robot by inputting a constant PWM signal of 110.<p>
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 7/step_response_position.png" alt="...">
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 7/step_response_velocity.png" alt="...">
+                        <p>The steady state velocity from the step input was 1.12 m/s. The time taken to reach 90 percent of this steady state value was 6.445 seconds. For the sake of simplicity, I assumed unit step input (i.e. 110 PWM = 1 unit input) to calculate m and d. This just means that I will have to normalize the input vector u by 110 later. d was calculated to be 0.0008928571429 and m was calculated to be 0.00249913208. Now that I have values for m and d, I can predict the future states of the system given the input u. The advantage of this is that I can infer the robot's state (i.e. position and velocity) even without ToF sensor readings. So I will no longer have to rely on the sensor to determine the position of the robot. This effectively increases the frequency of the control loop.
+                        <br>
+                        <h2>Simulating the Kalman filter on Lab 6 Data</h2>
+                        <br>
+                        <p>Because the system (robot) works in discrete time, I first had to discretize the system matrices A and B. I used to equations given in lecture to do this. The equations are:<p>
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 7/discretize.png" alt="...">
+                        <p>The sampling time used was 100 ms because that's approximately how long it takes for the ToF sensor to make a measurement. Then I had to determine a value for the measurement noise (sigma z). An easy way to do this is to leave the robot still and see how much noise there is in the sensor readings. There was about a 20 mm fluctuation in the sensor's measurements so I used a value of 20 mm for sigma z. Then I had to figure out how much trust to put in the model of the system that we developed in the previous section. The matrix containing this information is called the process noise (sigma u). I just used the values given in lecture for the process noise (27.7 mm for position and 27.7 mm/s for velocity). Finally, I could input these values into the Kalman filter. The code for the Kalman filter is given below:
+                          <script src="https://gist.github.com/apark2459/b0453faf8da8295393cbe69aeef44f01.js"></script>
+                        <p>Then I simulated the Kalman filter on the data from lab 6. Here is the code that simulates the Kalman filter on this data:<p>
+                          <script src="https://gist.github.com/apark2459/dd12bc537e1d7966bed9a57d35bc480e.js"></script>
+                        <p>'distance' is an array containing the distance sensor data from lab 6. 'time' is the time stamp array for these distance sensor readings.'u' is an array containing the motor input that was given to the robot in lab 6. Given the input 'u' and the system matrices, the model can predict the future states of the system based on what input you give it. The Kalman filter "fuses" the sensor data and the distance predicted by the model to give a more accurate estimation of the robot's distance from the wall. Here is the result of running the Kalman filter on the lab 6 data:<p>
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 7/kalman.png" alt="...">
+                        <h2>Using extrapolation to increase sampling rate</h2>
+                        <p>Implmenting the Kalman filter on my real robot proved to be challenging. Therefore, I instead decided to increase the sampling rate (i.e. frequency of the control loop) by using extrapolation. By extrapolation, I mean using past ToF data to predict future position of the robot. The way I approached this was to take the last two ToF data to calculate a velocity value. If the sensor data is ready, the robot just uses the sensor data. But if sensor data is not ready, the robot uses the velocity value to propate the robot's position in time. Since each loop takes about 10 ms, I take the current distance and add velocity•10ms to get the next distance value. The code for extrapolation is given below:<p>
+                          <script src="https://gist.github.com/apark2459/335095f4419aaa8d10f2ddee265ace72.js"></script>
+                        <p>Here is a video of the robot running this code to execute PID position control:<p>
+                          <iframe width="640" height="360" src="https://youtube.com/embed/yootDAq-TkM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+                        <p>Here is a plot of the time vs. distance data collected by the robot:<p>
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 7/extrapolation1.png" alt="...">
+                        <p>Here is the same plot but zoomed into the first couple of seconds of the task:<p>
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 7/extrapolation2.png" alt="...">
+                        <p>You can see that the orange dots (data without extrapolation) are much more sparse than the blue dots (data with extrapolation). This shows that the extrapolation code successfully increased the sampling rate. Also, the blue dots do not stray off much from the trend of the sensor readings (orange dots) so the extrapolation seems to be reasonably accurate as well. According to the recorded time stamps, it takes about 10 milliseconds on average in order to execute the loop once. So given that it takes about 100 ms for the ToF sensor to make a measurement, this extrapolation method effectively increases the sampling rate about tenfold.<p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Footer-->
+        <footer class="py-5 bg-dark">
+            <div class="container px-4"><p class="m-0 text-center text-white">Copyright &copy; apark2459.github.io 2023</p></div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>
