@@ -1,0 +1,70 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Lab 7</title>
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
+            <div class="container px-4">
+                <a class="navbar-brand" href="#page-top">Jin Hyun's ECE 4160 Website</a>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                </div>
+            </div>
+        </nav>
+        <!-- Header-->
+        <header class="bg-primary bg-gradient text-white">
+            <div class="container px-4 text-center">
+                <h1 class="fw-bolder">Lab 10: Grid Localization using Bayes Filter</h1>
+                <p class="lead">The purpose of this lab is to implement grid localization using Bayes filter.</p>
+                <a href="index.html" style="font-size: 20px;color: white;text-decoration: underline">Back to mainpage</a>
+            </div>
+        </header>
+        <!-- About section-->
+        <section id="about">
+            <div class="container px-4">
+                <div class="row gx-4 justify-content-center">
+                    <div class="col-lg-10">
+                        <h2>Introduction</h2>
+                        <p>Robot localization is the process of determining where a mobile robot is located with respect to its environment. In this lab, I used a simulation software to implement a probabilistic method to localize a mobile robot. This is in contrast to the previous lab which used a non-probabilistic method.<p>
+                        <br>
+                        <h2>Lab Tasks</h2>
+                        <br>
+                        <p>First, I will briefly go over the Bayes filter. Here is the Bayes filter algorithm:<p>
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 10/bayes_eqn.png" alt="...">
+                        <p>The Bayes filter takes 3 inputs: (1) the belief distribution of the robot's previous pose (i.e. state) (2) control input during the current time step (3) sensor measurements made during the current time step. Then the algorithm loops over every possible pose that the robot could possibly be in and calculates the probability of the robot being in each of those poses. It does this through two sub-steps: prediction and update. The prediction step takes the previous belief distribution and the control input for the current time step. Then it calculates the probability of the robot having the pose xt. The update step then takes into account the sensor measurements made during the current time step and updates the belief distribution accordingly.<p>
+                        <p>In our actual implementation of the Bayes filter, I divided these steps even further. I defined helper functions compute_control, odom_motion_model. I also modeled the sensor as a Gaussian. Here is the code for the helper functions just mentioned, the prediction step, and the update step:<p>
+                          <script src="https://gist.github.com/apark2459/5fe412ef61b023cd5d8e7261c071fe53.js"></script>
+                          <script src="https://gist.github.com/apark2459/595aa076f60ef8ebb9c926cd9e27faab.js"></script>
+                          <script src="https://gist.github.com/apark2459/3c6990fc6ff59a4c9f22dc272faeefa9.js"></script>
+                          <script src="https://gist.github.com/apark2459/f388f42ce55a6bb5ac441c6820b35d3d.js"></script>
+                          <script src="https://gist.github.com/apark2459/39663808d7623d5691837d1059a3d2e2.js"></script>
+                        <p>Note that this code was written by Anya Probowo who took this course last year.<p>
+                        <br>
+                        <h2>Testing the Bayes Filter</h2>
+                        <br>
+                        <p> I tested the Bayes filter algorithm implemented above on a pre-planned trajectory. Here is a video of the results:
+                          <iframe width="640" height="360" src="https://youtube.com/embed/S1hHw_PC_iY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+                        <p>The green trajectory is the ground truth, blue trajectory is the trajectory according to the belief distribution (Bayes filter!) and the red trajectory is based on solely the odometry data.<p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Footer-->
+        <footer class="py-5 bg-dark">
+            <div class="container px-4"><p class="m-0 text-center text-white">Copyright &copy; apark2459.github.io 2023</p></div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>
