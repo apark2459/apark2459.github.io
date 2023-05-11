@@ -1,0 +1,71 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Lab 9</title>
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
+            <div class="container px-4">
+                <a class="navbar-brand" href="#page-top">Jin Hyun's ECE 4160 Website</a>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                </div>
+            </div>
+        </nav>
+        <!-- Header-->
+        <header class="bg-primary bg-gradient text-white">
+            <div class="container px-4 text-center">
+                <h1 class="fw-bolder">Lab 9: Mapping</h1>
+                <p class="lead">The purpose of this lab is to map out a static room. To build the map, I placed my robot in a couple of marked up locations around the lab, and had it spin around its axis while collecting ToF readings.</p>
+                <a href="index.html" style="font-size: 20px;color: white;text-decoration: underline">Back to mainpage</a>
+            </div>
+        </header>
+        <!-- About section-->
+        <section id="about">
+            <div class="container px-4">
+                <div class="row gx-4 justify-content-center">
+                    <div class="col-lg-10">
+                        <h2>Angular Velocity Control</h2>
+                        <p>First, I had to figure out a way to get the robot to spin at a consistent rate at a fixed spot. To do this, I wrote code that implements a P controller to control the robot's angular velocity. I tried adding integration and derivative control but just a simple P controller seemed to work the best. Here is the code that implements a P controller to control the angular velocity:<p>
+                          <script src="https://gist.github.com/apark2459/33a8b917b1c326c39a90ee18d4c15020.js"></script>
+                        <p>I set the target angular velocity to be -20 degrees per second. Negative angular velocity corresponds to clockwise rotation. Also note that I had to add a conditional statement to prevent the robot from turning too fast at the beginning due to the spike in error at t=0.
+                        <p>To prove that this works, here is a video of my robot turning at approximately 20 degrees per second:<p>
+                          <iframe width="640" height="360" src="https://youtube.com/embed/dYf3xqItows" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+                          <h2>Mapping using TOF Readings</h2>
+                        <p>To map the lab room, I placed my robot at 4 designated points within the room. At each of the points, my robot read out distance readings using the TOF sensor as it rotated 360 degrees at the designated points (using the code developed in the previous section). Here are the plots of my results:<p>
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 9/location 1.png" alt="...">
+                          <br>
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 9/location 2.png" alt="...">
+                          <br>
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 9/location 3.png" alt="...">
+                          <br>
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 9/location 4.png" alt="...">
+                        <p>These plots did not look as good as I expected. This is most likely due to the fact that, insteady of actually measuring the orientation (i.e. yaw angle) of the robot as it spinned using the IMU, I assumed a constant angular velocity throughout the rotation and calculated the orientation.<p>
+                        <p>Next, I had to merge these four polar plots into a single Cartesian plot. The mapping from r-theta space to x-y space is as follows:<p>
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 9/equations.png" alt="...">
+                        <br>
+                        <p>Using this mapping, I merged to four plots together into one single map. Here is the map that resulted from merging the four together<p>
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 9/merged.png" alt="...">
+                        <p>Unfortunately, the map that I got does not resemble the lab room very much. Again, this is most likely due to the fact that I assumed constant angular velocity to calculate the orientation of the robot instead of actually calculating the orientation of the robot based on the IMU data. It is difficult to draw a line-based map based on this plot as there aren't any segments that resemble a line. If time allows, I plan to retake the data but this time I will also measure the orientation of the robot.<p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Footer-->
+        <footer class="py-5 bg-dark">
+            <div class="container px-4"><p class="m-0 text-center text-white">Copyright &copy; apark2459.github.io 2023</p></div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>
