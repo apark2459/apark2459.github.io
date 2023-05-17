@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>Lab 7</title>
+        <title>Lab 10</title>
         <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="css/styles.css" rel="stylesheet" />
@@ -38,9 +38,11 @@
                         <br>
                         <h2>Lab Tasks</h2>
                         <br>
-                        <p>First, I will briefly go over the Bayes filter. Here is the Bayes filter algorithm:<p>
-                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 10/bayes_eqn.png" alt="...">
-                        <p>The Bayes filter takes 3 inputs: (1) the belief distribution of the robot's previous pose (i.e. state) (2) control input during the current time step (3) sensor measurements made during the current time step. Then the algorithm loops over every possible pose that the robot could possibly be in and calculates the probability of the robot being in each of those poses. It does this through two sub-steps: prediction and update. The prediction step takes the previous belief distribution and the control input for the current time step. Then it calculates the probability of the robot having the pose xt. The update step then takes into account the sensor measurements made during the current time step and updates the belief distribution accordingly.<p>
+                        <p>First, I will briefly go over the theory behind Bayes filter. Here is the Bayes filter algorithm:<p>
+                          <img class="img-fluid rounded mb-5" width="660" height="315" src="assets/img/lab 10/bayes_eqn.png" alt="...">
+                        <p>The Bayes filter takes 3 inputs: (1) the belief distribution of the robot's previous pose (i.e. state) (2) control input during the current time step (3) sensor measurements made during the current time step. A belief is essentially one's "best guess" at something. For the purpose of localization, the belief about the robot's pose is basically the "best guess" at where the robot is within the map. The algorithm loops over every pose that the robot could possibly be in and calculates the probability of the robot being in each of those poses. It does this through two sub-steps: prediction and update.
+                        <p>The prediction step takes the previous belief distribution and the control input for the current time step. That is, given the belief distribution of the robot's pose in the previous step and the input that is given to the robot, it calculates the probability of the new belief distribution of the robot's current pose.
+                        <p>The update step then incoporates the information from the sensor measurements made during the current time step and updates the belief distribution accordingly.<p>
                         <p>In our actual implementation of the Bayes filter, I divided these steps even further. I defined helper functions compute_control, odom_motion_model. I also modeled the sensor as a Gaussian. Here is the code for the helper functions just mentioned, the prediction step, and the update step:<p>
                           <script src="https://gist.github.com/apark2459/5fe412ef61b023cd5d8e7261c071fe53.js"></script>
                           <script src="https://gist.github.com/apark2459/595aa076f60ef8ebb9c926cd9e27faab.js"></script>
