@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>Lab 7</title>
+        <title>Lab 8</title>
         <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="css/styles.css" rel="stylesheet" />
@@ -33,36 +33,23 @@
             <div class="container px-4">
                 <div class="row gx-4 justify-content-center">
                     <div class="col-lg-10">
-                        <h2>Lab Tasks</h2>
-                        <p>For this lab, I made my robot drive towards the wall as fast as it can and when was within 3 feet of the wall, perform a 180 degree drift and come back to the start line. <p>
-                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 7/equation.png" alt="...">
-                        <p>First off, since I chose to do position control for lab 6, I had to write code for orientation control for this lab. I used code from lab 4 to compute the yaw angle of the robot. <p>
-                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 7/parameters.png" alt="...">
-                        <p>I obtained the step response of my robot by inputting a constant PWM signal of 110.<p>
-                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 7/step_response_position.png" alt="...">
-                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 7/step_response_velocity.png" alt="...">
-                        <p>The steady state velocity from the step input was 1.12 m/s. The time taken to reach 90 percent of this steady state value was 6.445 seconds. For the sake of simplicity, I assumed unit step input (i.e. 110 PWM = 1 unit input) to calculate m and d. This just means that I will have to normalize the input vector u by 110 later. d was calculated to be 0.0008928571429 and m was calculated to be 0.00249913208. Now that I have values for m and d, I can predict the future states of the system given the input u. The advantage of this is that I can infer the robot's state (i.e. position and velocity) even without ToF sensor readings. So I will no longer have to rely on the sensor to determine the position of the robot. This effectively increases the frequency of the control loop.
-                        <br>
-                        <h2>Simulating the Kalman filter on Lab 6 Data</h2>
-                        <br>
-                        <p>Because the system (robot) works in discrete time, I first had to discretize the system matrices A and B. I used to equations given in lecture to do this. The equations are:<p>
-                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 7/discretize.png" alt="...">
-                        <p>The sampling time used was 100 ms because that's approximately how long it takes for the ToF sensor to make a measurement. Then I had to determine a value for the measurement noise (sigma z). An easy way to do this is to leave the robot still and see how much noise there is in the sensor readings. There was about a 20 mm fluctuation in the sensor's measurements so I used a value of 20 mm for sigma z. Then I had to figure out how much trust to put in the model of the system that we developed in the previous section. The matrix containing this information is called the process noise (sigma u). I just used the values given in lecture for the process noise (27.7 mm for position and 27.7 mm/s for velocity). Finally, I could input these values into the Kalman filter. The code for the Kalman filter is given below:
-                          <script src="https://gist.github.com/apark2459/b0453faf8da8295393cbe69aeef44f01.js"></script>
-                        <p>Then I simulated the Kalman filter on the data from lab 6. Here is the code that simulates the Kalman filter on this data:<p>
-                          <script src="https://gist.github.com/apark2459/dd12bc537e1d7966bed9a57d35bc480e.js"></script>
-                        <p>'distance' is an array containing the distance sensor data from lab 6. 'time' is the time stamp array for these distance sensor readings.'u' is an array containing the motor input that was given to the robot in lab 6. Given the input 'u' and the system matrices, the model can predict the future states of the system based on what input you give it. The Kalman filter "fuses" the sensor data and the distance predicted by the model to give a more accurate estimation of the robot's distance from the wall. Here is the result of running the Kalman filter on the lab 6 data:<p>
-                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 7/kalman.png" alt="...">
-                        <h2>Using extrapolation to increase sampling rate</h2>
-                        <p>Implmenting the Kalman filter on my real robot proved to be challenging. Therefore, I instead decided to increase the sampling rate (i.e. frequency of the control loop) by using extrapolation. By extrapolation, I mean using past ToF data to predict future position of the robot. The way I approached this was to take the last two ToF data to calculate a velocity value. If the sensor data is ready, the robot just uses the sensor data. But if sensor data is not ready, the robot uses the velocity value to propate the robot's position in time. Since each loop takes about 10 ms, I take the current distance and add velocity•10ms to get the next distance value. The code for extrapolation is given below:<p>
-                          <script src="https://gist.github.com/apark2459/335095f4419aaa8d10f2ddee265ace72.js"></script>
-                        <p>Here is a video of the robot running this code to execute PID position control:<p>
-                          <iframe width="640" height="360" src="https://youtube.com/embed/yootDAq-TkM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
-                        <p>Here is a plot of the time vs. distance data collected by the robot:<p>
-                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 7/extrapolation1.png" alt="...">
-                        <p>Here is the same plot but zoomed into the first couple of seconds of the task:<p>
-                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 7/extrapolation2.png" alt="...">
-                        <p>You can see that the orange dots (data without extrapolation) are much more sparse than the blue dots (data with extrapolation). This shows that the extrapolation code successfully increased the sampling rate. Also, the blue dots do not stray off much from the trend of the sensor readings (orange dots) so the extrapolation seems to be reasonably accurate as well. According to the recorded time stamps, it takes about 10 milliseconds on average in order to execute the loop once. So given that it takes about 100 ms for the ToF sensor to make a measurement, this extrapolation method effectively increases the sampling rate about tenfold.<p>
+                        <h2>Introduction</h2>
+                        <p>For this lab, I made my robot drive towards the wall as fast as it can and when was within 3 feet of the wall, perform a 180 degree drift and come back to the start line.<p>
+                        <h2>Orientation Control</h2>
+                        <p>First off, since I chose to do position control for lab 6, I had to write new code for orientation control for this lab. I used code from lab 4 to compute the yaw angle of the robot. Then I implemented a proportional controller to control the robot's orientation (i.e. yaw). Here is the code I wrote to achieve this:<p>
+                          <script src="https://gist.github.com/apark2459/7a8046fe0665118a243c7848096975d1.js"></script>
+                        <p>Here is a video of the orientation control working:<p>
+                          <iframe width="640" height="360" src="https://youtube.com/embed/0GX7j2DWIPk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+                        <p>Below is the plot of the time vs. orientation (yaw) from the video above:<p>
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 8/plot.png" alt="...">
+                        <h2>Performing the Stunt</h2>
+                        <p>My plan for the stunt was to simply use the code I wrote for the orientation control but add in an offset to the PWM values by a value of 100 so that the robot moves forward with 100 PWM while maintaining control of its orientation. Then when it got to 300 mm from the wall, it would perform a 180 degree turn and return to its initial starting position while maintaining its original orientation using orientation control. Unfortunately, getting the robot to do a stunt using the orientation control developed in the previous section proved to be a real challenge. One of the biggest problems I had was that if the angular velocity of the robot changes too fast, the zero point of the robot's orientation changes. This is likely due to the fact that the angular velocity was changing quicker than the control loop could run (i.e. the code could not integrate the angular velocity quick enough to accurately capture the robot's orientation). Therefore, I had to use open-loop control to perform the stunt. The code for the open-loop control is below:<p>
+                          <script src="https://gist.github.com/apark2459/6dee085da922639d640f4faa8d3c22da.js"></script>
+                        <p>Here are videos of 3 successful runs of the stunt:<p>
+                          <iframe width="640" height="360" src="https://youtube.com/embed/2axTWdyuU2w" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+                          <iframe width="640" height="360" src="https://youtube.com/embed/bQjhn1gBNNo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+                          <iframe width="640" height="360" src="https://youtube.com/embed/8TSlDvy64I0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+                        <p>If time allows at the end of the semester, I plan to implement the extrapolation method from lab 7 such that the robot can react faster to sensor measurements.<p>
                     </div>
                 </div>
             </div>

@@ -39,22 +39,31 @@
                         <p>I set the target angular velocity to be -20 degrees per second. Negative angular velocity corresponds to clockwise rotation. Also note that I had to add a conditional statement to prevent the robot from turning too fast at the beginning due to the spike in error at t=0.
                         <p>To prove that this works, here is a video of my robot turning at approximately 20 degrees per second:<p>
                           <iframe width="640" height="360" src="https://youtube.com/embed/dYf3xqItows" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+                        <p>As you'll see in the plots for time vs. yaw in the next section, the controller worked surprisingly well despite its simplicity.
                           <h2>Mapping using TOF Readings</h2>
-                        <p>To map the lab room, I placed my robot at 4 designated points within the room. At each of the points, my robot read out distance readings using the TOF sensor as it rotated 360 degrees at the designated points (using the code developed in the previous section). Here are the plots of my results:<p>
-                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 9/location 1.png" alt="...">
-                          <br>
-                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 9/location 2.png" alt="...">
-                          <br>
-                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 9/location 3.png" alt="...">
-                          <br>
-                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 9/location 4.png" alt="...">
-                        <p>These plots did not look as good as I expected. This is most likely due to the fact that, insteady of actually measuring the orientation (i.e. yaw angle) of the robot as it spinned using the IMU, I assumed a constant angular velocity throughout the rotation and calculated the orientation.<p>
+                        <p>To map the lab room, I placed my robot at four designated points within the room. The coordinates for the four points were (5,-3), (5,3), (0,3), and (-3,-2) where the coordiantes are in units of tiles on the floor of the lab room. Each tile has a dimension of 1 foot x 1 foot.
+                        <p>Here is a true map of the lab room that Aryaa Pai (student from last year) had made:<p>
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 9/true_map.png" alt="...">
+                        <p>At each of the four points, my robot read out distance readings using the TOF sensor as it rotated 360 degrees at the designated points (using the code written in the previous section). I also changed the target rotation rate to 30 degrees per second to speed things up. I recorded IMU and TOF measurements every 0.5 seconds and plotted them.<p>
+                        <p>Plots for location 1 (5,-3):<p>
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 9/location1_plots.png" alt="...">
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 9/location1_polar.png" alt="...">
+                        <p>Plots for location 2 (5,3):<p>
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 9/location2_plots.png" alt="...">
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 9/location2_polar.png" alt="...">
+                        <p>Plots for location 3 (0,3):<p>
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 9/location3_plots.png" alt="...">
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 9/location3_polar.png" alt="...">
+                        <p>Plots for location 4 (-3,-2):<p>
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 9/location4_plots.png" alt="...">
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 9/location4_polar.png" alt="...">
+                        <p>The points on the polar plots are a little sparser than I would have liked. This could be improved by logging the sensor measurements more frequently (for example, insteady of logging it every 0.5 seconds, log it every 0.1 seconds) to increase the density of the points.<p>
                         <p>Next, I had to merge these four polar plots into a single Cartesian plot. The mapping from r-theta space to x-y space is as follows:<p>
                           <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 9/equations.png" alt="...">
-                        <br>
-                        <p>Using this mapping, I merged to four plots together into one single map. Here is the map that resulted from merging the four together<p>
+                        <p>Using this mapping, I merged to four plots together into one single map. Here is the map that resulted from merging the four together:<p>
                           <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 9/merged.png" alt="...">
-                        <p>Unfortunately, the map that I got does not resemble the lab room very much. Again, this is most likely due to the fact that I assumed constant angular velocity to calculate the orientation of the robot instead of actually calculating the orientation of the robot based on the IMU data. It is difficult to draw a line-based map based on this plot as there aren't any segments that resemble a line. If time allows, I plan to retake the data but this time I will also measure the orientation of the robot.<p>
+                        <p>The generated map looks reasonably accurate except the robot couldn't accurately map the box in the middle of the room. Next, I generated a line-based map based on this merged map:<p>
+                          <img class="img-fluid rounded mb-5" width="460" height="315" src="assets/img/lab 9/line_based.png" alt="...">
                     </div>
                 </div>
             </div>
